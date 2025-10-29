@@ -1,0 +1,15 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Temporary constraints files
+.vllm_constraints.txt
+# DeepSeek-OCR
+DeepSeek-OCR_paper.md

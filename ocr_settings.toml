@@ -1,0 +1,19 @@
+# Default configuration for the DeepSeek OCR pipeline.
+# Adjust values here or via `DEEPSEEK_` environment variables.
+
+model = "deepseek-ai/DeepSeek-OCR"
+prompt = "<image>\n<|grounding|>Convert the document to markdown."
+pdf_path = "DeepSeek_OCR_paper.pdf"
+output_docs_dir = "outputs/docs"
+# Uncomment to override the derived images directory.
+# output_images_dir = "outputs/docs/images"
+output_markdown = "DeepSeek-OCR_paper.md"
+pdf_dpi = 144
+crop_mode = false
+max_concurrency = 1
+image_size = 640
+base_size = 1024
+min_crops = 1
+max_crops = 6
+ngram_size = 6
+window_size = 60

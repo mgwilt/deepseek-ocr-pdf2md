@@ -22,6 +22,8 @@ dependencies = [
     "torch",
     "torchvision",
     "torchaudio",
+    "pydantic>=2.12.3",
+    "pydantic-settings>=2.6.0",
 ]
 
 [tool.uv.sources]

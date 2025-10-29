@@ -4,7 +4,6 @@ import ast
 import io
 import os
 import re
-import sys
 from collections.abc import Sequence as AbcSequence
 from pathlib import Path
 from typing import List, Sequence, Tuple
@@ -12,29 +11,26 @@ from typing import List, Sequence, Tuple
 import fitz
 from PIL import Image
 from vllm import LLM, SamplingParams
-from vllm.model_executor.models.registry import ModelRegistry
+from vllm.model_executor.models.deepseek_ocr import NGramPerReqLogitsProcessor
+import vllm.transformers_utils.processors.deepseek_ocr as deepseek_processor_module
+
+from ocr_settings import ResolvedOCRSettings, load_settings
 
 ROOT = Path(__file__).resolve().parent
-DEEPSEEK_VLLM_DIR = ROOT / "DeepSeek-OCR" / "DeepSeek-OCR-master" / "DeepSeek-OCR-vllm"
+SETTINGS: ResolvedOCRSettings = load_settings(ROOT)
 
 os.environ["VLLM_USE_V1"] = "1"
 Image.MAX_IMAGE_PIXELS = None
 
-if str(DEEPSEEK_VLLM_DIR) not in sys.path:
-    sys.path.insert(0, str(DEEPSEEK_VLLM_DIR))
-
-from config import CROP_MODE, MODEL_PATH, PROMPT  # type: ignore  # noqa: E402
-from deepseek_ocr import (  # type: ignore  # noqa: E402
-    DeepseekOCRForCausalLM,
-    NGramPerReqLogitsProcessor,
-)
-from process.image_process import DeepseekOCRProcessor  # type: ignore  # noqa: E402
-
-PDF_PATH = ROOT / "DeepSeek_OCR_paper.pdf"
-OUTPUT_DOCS_DIR = ROOT / "outputs" / "docs"
-OUTPUT_IMAGES_DIR = OUTPUT_DOCS_DIR / "images"
-OUTPUT_MARKDOWN = OUTPUT_DOCS_DIR / "DeepSeek-OCR_paper.md"
-PDF_DPI = 144
+MODEL_PATH = SETTINGS.model_path
+PROMPT = SETTINGS.prompt
+PDF_PATH = SETTINGS.pdf_path
+OUTPUT_DOCS_DIR = SETTINGS.output_docs_dir
+OUTPUT_IMAGES_DIR = SETTINGS.output_images_dir
+OUTPUT_MARKDOWN = SETTINGS.output_markdown
+PDF_DPI = SETTINGS.pdf_dpi
+CROP_MODE = SETTINGS.crop_mode
+MAX_CONCURRENCY = SETTINGS.max_concurrency
 
 DETECTION_PATTERN = re.compile(r"<\|ref\|>.*?<\|/ref\|><\|det\|>.*?<\|/det\|>", re.DOTALL)
 DETECTION_CAPTURE_PATTERN = re.compile(
@@ -47,6 +43,9 @@ REPLACEMENTS = {
     "\\eqqcolon": "=:",
     "<--- Page Split --->": "",
 }
+COORDINATE_BRACKET_PATTERN = re.compile(r"\[\s*\d+(?:\s*,\s*\d+)*\s*\]")
+REPEATED_WORD_PATTERN = re.compile(r"(\b\w+\b)(?:\s+\1\b){3,}", re.IGNORECASE)
+REF_TAG_PATTERN = re.compile(r"<ref>.*?</ref>", re.IGNORECASE | re.DOTALL)
 
 
 def pdf_to_images(pdf_path: Path, dpi: int) -> List[Image.Image]:
@@ -64,13 +63,15 @@ def pdf_to_images(pdf_path: Path, dpi: int) -> List[Image.Image]:
     return images
 
 
-def build_batch_inputs(images: List[Image.Image], processor: DeepseekOCRProcessor) -> List[dict]:
+def build_batch_inputs(
+    images: List[Image.Image],
+    prompt: str,
+) -> List[dict]:
     batch_inputs: List[dict] = []
     for image in images:
-        mm_data = processor.tokenize_with_images(images=[image], bos=True, eos=True, cropping=CROP_MODE)
         batch_inputs.append({
-            "prompt": PROMPT,
-            "multi_modal_data": {"image": mm_data},
+            "prompt": prompt,
+            "multi_modal_data": {"image": [image]},
         })
     return batch_inputs
 
@@ -202,33 +203,41 @@ def replace_grounding_tokens(
 def sanitize_page_text(text: str) -> str:
     cleaned = text.replace("<｜end▁of▁sentence｜>", "")
     cleaned = DETECTION_PATTERN.sub("", cleaned)
+    cleaned = REF_TAG_PATTERN.sub("", cleaned)
+    cleaned = re.sub(r"</?ref>", "", cleaned, flags=re.IGNORECASE)
+    cleaned = COORDINATE_BRACKET_PATTERN.sub("", cleaned)
+    cleaned = REPEATED_WORD_PATTERN.sub(lambda match: match.group(1), cleaned)
+    cleaned = re.sub(r"\btext\b", "", cleaned, flags=re.IGNORECASE)
     for needle, replacement in REPLACEMENTS.items():
         cleaned = cleaned.replace(needle, replacement)
     cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
+    cleaned = re.sub(r"[ \t]{2,}", " ", cleaned)
+    cleaned = re.sub(r"\n(?:\s*\n)+", "\n\n", cleaned)
     return cleaned.strip()
-
-
-def ensure_model_registered() -> None:
-    try:
-        ModelRegistry.register_model("DeepseekOCRForCausalLM", DeepseekOCRForCausalLM)
-    except ValueError:
-        pass
 
 
 def main() -> None:
     if not PDF_PATH.exists():
         raise FileNotFoundError(f"PDF file not found: {PDF_PATH}")
 
-    ensure_model_registered()
     prepare_output_dirs()
+
+    # Apply runtime overrides for DeepSeek processor behaviour.
+    deepseek_processor_module.CROP_MODE = CROP_MODE
+    if hasattr(deepseek_processor_module, "IMAGE_SIZE"):
+        deepseek_processor_module.IMAGE_SIZE = SETTINGS.image_size
+    if hasattr(deepseek_processor_module, "BASE_SIZE"):
+        deepseek_processor_module.BASE_SIZE = SETTINGS.base_size
+    if hasattr(deepseek_processor_module, "MIN_CROPS"):
+        deepseek_processor_module.MIN_CROPS = SETTINGS.min_crops
+    if hasattr(deepseek_processor_module, "MAX_CROPS"):
+        deepseek_processor_module.MAX_CROPS = SETTINGS.max_crops
 
     pdf_images = pdf_to_images(PDF_PATH, PDF_DPI)
     if not pdf_images:
         raise RuntimeError("No pages extracted from PDF.")
 
-    processor = DeepseekOCRProcessor()
-
-    max_concurrency = 1  # max(1, min(8, len(pdf_images)))
+    max_concurrency = max(1, min(MAX_CONCURRENCY, len(pdf_images)))
     llm = LLM(
         model=MODEL_PATH,
         hf_overrides={"architectures": ["DeepseekOCRForCausalLM"]},
@@ -250,13 +259,13 @@ def main() -> None:
         skip_special_tokens=False,
         include_stop_str_in_output=True,
         extra_args={
-            "ngram_size": 20,
-            "window_size": 50,
+            "ngram_size": SETTINGS.ngram_size,
+            "window_size": SETTINGS.window_size,
             "whitelist_token_ids": [128821, 128822],
         },
     )
 
-    batch_inputs = build_batch_inputs(pdf_images, processor)
+    batch_inputs = build_batch_inputs(pdf_images, PROMPT)
     outputs = llm.generate(batch_inputs, sampling_params=sampling_params)
 
     markdown_sections: List[str] = []

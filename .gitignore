@@ -12,3 +12,5 @@ wheels/
 # Temporary constraints files
 .vllm_constraints.txt
 # DeepSeek-OCR
+deepseek_optical_memory_chat.md
+.gitignore

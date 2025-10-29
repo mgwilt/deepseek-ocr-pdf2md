@@ -29,7 +29,9 @@ from deepseek_ocr import (  # type: ignore  # noqa: E402
 from process.image_process import DeepseekOCRProcessor  # type: ignore  # noqa: E402
 
 PDF_PATH = ROOT / "DeepSeek_OCR_paper.pdf"
-OUTPUT_MARKDOWN = ROOT / "DeepSeek-OCR_paper.md"
+OUTPUT_DOCS_DIR = ROOT / "outputs" / "docs"
+OUTPUT_IMAGES_DIR = OUTPUT_DOCS_DIR / "images"
+OUTPUT_MARKDOWN = OUTPUT_DOCS_DIR / "DeepSeek-OCR_paper.md"
 PDF_DPI = 144
 
 DETECTION_PATTERN = re.compile(r"<\|ref\|>.*?<\|/ref\|><\|det\|>.*?<\|/det\|>", re.DOTALL)
@@ -87,6 +89,7 @@ def main() -> None:
         raise FileNotFoundError(f"PDF file not found: {PDF_PATH}")
 
     ensure_model_registered()
+    OUTPUT_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 
     pdf_images = pdf_to_images(PDF_PATH, PDF_DPI)
     if not pdf_images:
@@ -127,15 +130,21 @@ def main() -> None:
 
     markdown_sections: List[str] = []
     for idx, output in enumerate(outputs, start=1):
-        if not output.outputs:
-            continue
-        page_text = output.outputs[0].text
-        cleaned = sanitize_page_text(page_text)
+        image_filename = f"page-{idx:03}.png"
+        image_path = OUTPUT_IMAGES_DIR / image_filename
+        pdf_images[idx - 1].save(image_path, format="PNG")
+
         section_header = f"<!-- Page {idx} -->"
-        if cleaned:
-            markdown_sections.append(f"{section_header}\n{cleaned}")
-        else:
-            markdown_sections.append(section_header)
+        image_markdown = f"![Page {idx}](images/{image_filename})"
+
+        if output.outputs:
+            page_text = output.outputs[0].text
+            cleaned = sanitize_page_text(page_text)
+            if cleaned:
+                markdown_sections.append(f"{section_header}\n{image_markdown}\n\n{cleaned}")
+                continue
+
+        markdown_sections.append(f"{section_header}\n{image_markdown}\n\n_No OCR output for this page._")
 
     final_markdown = "\n\n".join(markdown_sections).strip() + "\n"
     OUTPUT_MARKDOWN.write_text(final_markdown, encoding="utf-8")

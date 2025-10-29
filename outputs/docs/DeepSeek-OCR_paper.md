@@ -98,7 +98,7 @@ In summary, this work presents a preliminary exploration of using visual modalit
 <!-- Page 4 -->
 <!-- Page image stored at images/page-004.png -->
 
-![Figure 1](images/page-004-figure-01.png)
+![Figure 3](images/page-004-figure-01.png)
 
 ![image_caption](images/page-004-figure-02.png)
 
@@ -117,7 +117,7 @@ OCR, particularly document parsing task, has been a highly active topic in the i
 <!-- Page 5 -->
 <!-- Page image stored at images/page-005.png -->
 
-![Figure 1](images/page-005-figure-01.png)
+![Figure 5](images/page-005-figure-01.png)
 
 ![image_caption](images/page-005-figure-02.png)
 
@@ -140,7 +140,7 @@ DeepEncoder mainly consists of two components: a visual perception feature extra
 <!-- Page 6 -->
 <!-- Page image stored at images/page-006.png -->
 
-![Figure 1](images/page-006-figure-01.png)
+![Figure 7](images/page-006-figure-01.png)
 
 ![image_caption](images/page-006-figure-02.png)
 
@@ -192,11 +192,11 @@ Document data is the top priority for DeepSeek- OCR. We collect 30M pages of div
 <!-- Page 8 -->
 <!-- Page image stored at images/page-008.png -->
 
-![Figure 1](images/page-008-figure-01.png)
+![Figure 9](images/page-008-figure-01.png)
 
 14. Mala Zeli popuniti tablicu tako da u svaku celiju upise jedan broj. Za sada je upisala dva broja kako je prikazano na slici. Tablicu Zeli popuniti tako da je zbroj svih upisanih brojeva 35, zbroj brojeva u prve tri celije je 22, a zbroj brojeva u posljednje tri celije 25. Koliki je umnožak brojeva koje ce upisati u sive celije? 
 
-![Figure 2](images/page-008-figure-02.png)
+![Figure 10](images/page-008-figure-02.png)
 
 A) 63 
 B) 108 
@@ -216,7 +216,7 @@ celiji 21 - 12 = 9. Umnožak tih brojeva je 63.
 
 Oznáčimo s a, b i c brojeve koji nedostaju u tablici. 
 
-![Figure 3](images/page-008-figure-03.png)
+![Figure 11](images/page-008-figure-03.png)
 
 Tražimo umnožak brojeva a i c. 
 
@@ -241,7 +241,7 @@ Drugi dan trčanja može izabrati na 4 različita načina poštujući uvjet da n
 <!-- Page 9 -->
 <!-- Page image stored at images/page-009.png -->
 
-![Figure 1](images/page-009-figure-01.png)
+![Figure 12](images/page-009-figure-01.png)
 
 ![image_caption](images/page-009-figure-02.png)
 
@@ -317,7 +317,7 @@ DeepSeek-OCR possesses both layout and OCR 2.0 capabilities, enabling it to furt
 <!-- Page 13 -->
 <!-- Page image stored at images/page-013.png -->
 
-![Figure 1](images/page-013-figure-01.png)
+![Figure 14](images/page-013-figure-01.png)
 
 ![image_caption](images/page-013-figure-02.png)
 
@@ -326,19 +326,19 @@ DeepSeek-OCR possesses both layout and OCR 2.0 capabilities, enabling it to furt
 <!-- Page 14 -->
 <!-- Page image stored at images/page-014.png -->
 
-![Figure 1](images/page-014-figure-01.png)
+![Figure 16](images/page-014-figure-01.png)
 
 ![image_caption](images/page-014-figure-02.png)
 
 <center>Input image </center> 
 
-![Figure 3](images/page-014-figure-03.png)
+![Figure 18](images/page-014-figure-03.png)
 
 ![image_caption](images/page-014-figure-04.png)
 
 <center>Result </center> 
 
-![Figure 5](images/page-014-figure-05.png)
+![Figure 20](images/page-014-figure-05.png)
 
 ![image_caption](images/page-014-figure-06.png)
 
@@ -347,7 +347,7 @@ DeepSeek-OCR possesses both layout and OCR 2.0 capabilities, enabling it to furt
 <!-- Page 15 -->
 <!-- Page image stored at images/page-015.png -->
 
-![Figure 1](images/page-015-figure-01.png)
+![Figure 22](images/page-015-figure-01.png)
 
 ![image_caption](images/page-015-figure-02.png)
 
@@ -356,7 +356,7 @@ DeepSeek-OCR possesses both layout and OCR 2.0 capabilities, enabling it to furt
 <!-- Page 16 -->
 <!-- Page image stored at images/page-016.png -->
 
-![Figure 1](images/page-016-figure-01.png)
+![Figure 24](images/page-016-figure-01.png)
 
 ![image_caption](images/page-016-figure-02.png)
 
@@ -369,7 +369,7 @@ PDF data on the Internet contains not only Chinese and English, but also a large
 <!-- Page 17 -->
 <!-- Page image stored at images/page-017.png -->
 
-![Figure 1](images/page-017-figure-01.png)
+![Figure 26](images/page-017-figure-01.png)
 
 ![image_caption](images/page-017-figure-02.png)
 
@@ -382,7 +382,7 @@ We also provide DeepSeek-OCR with a certain degree of general image understandin
 <!-- Page 18 -->
 <!-- Page image stored at images/page-018.png -->
 
-![Figure 1](images/page-018-figure-01.png)
+![Figure 28](images/page-018-figure-01.png)
 
 ![image_caption](images/page-018-figure-02.png)
 
@@ -395,7 +395,7 @@ Our work represents an initial exploration into the boundaries of vision- compre
 <!-- Page 19 -->
 <!-- Page image stored at images/page-019.png -->
 
-![Figure 1](images/page-019-figure-01.png)
+![Figure 30](images/page-019-figure-01.png)
 
 ![image_caption](images/page-019-figure-02.png)
 

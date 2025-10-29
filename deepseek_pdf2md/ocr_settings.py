@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import os
 
 import vllm.transformers_utils.processors.deepseek_ocr as deepseek_processor_module
 from pydantic import Field
@@ -55,7 +56,11 @@ class OCRSettings(BaseSettings):
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
     ) -> tuple[PydanticBaseSettingsSource, ...]:
-        toml_settings = TomlConfigSettingsSource(settings_cls)
+        override_path = os.getenv("DEEPSEEK_TOML")
+        if override_path:
+            toml_settings = TomlConfigSettingsSource(settings_cls, Path(override_path))
+        else:
+            toml_settings = TomlConfigSettingsSource(settings_cls)
         return (
             init_settings,
             toml_settings,
@@ -84,10 +89,23 @@ class ResolvedOCRSettings:
     window_size: int
 
 
-def load_settings(root: Path) -> ResolvedOCRSettings:
+def load_settings(root: Path, settings_file: Path | None = None) -> ResolvedOCRSettings:
     """Instantiate OCR settings and resolve any relative file system paths."""
 
-    raw = OCRSettings()
+    env_var = "DEEPSEEK_TOML"
+    previous_override = os.environ.get(env_var)
+    try:
+        if settings_file is not None:
+            settings_file = settings_file if settings_file.is_absolute() else root / settings_file
+            os.environ[env_var] = str(settings_file.resolve())
+
+        raw = OCRSettings()
+    finally:
+        if settings_file is not None:
+            if previous_override is None:
+                os.environ.pop(env_var, None)
+            else:
+                os.environ[env_var] = previous_override
 
     pdf_path = raw.pdf_path
     if not pdf_path.is_absolute():

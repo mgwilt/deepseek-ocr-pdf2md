@@ -577,6 +577,7 @@ dependencies = [
     { name = "torchvision", version = "0.24.0+cu128", source = { registry = "https://download.pytorch.org/whl/cu128" }, marker = "(python_full_version >= '3.15' and sys_platform == 'linux') or (platform_machine != 'aarch64' and sys_platform == 'linux') or (platform_python_implementation != 'CPython' and sys_platform == 'linux') or sys_platform == 'win32'" },
     { name = "transformers" },
     { name = "triton-kernels" },
+    { name = "typer" },
     { name = "vllm" },
     { name = "xformers" },
 ]
@@ -602,6 +603,7 @@ requires-dist = [
     { name = "torchvision", marker = "sys_platform == 'linux' or sys_platform == 'win32'", index = "https://download.pytorch.org/whl/cu128" },
     { name = "transformers" },
     { name = "triton-kernels", git = "https://github.com/triton-lang/triton.git?subdirectory=python%2Ftriton_kernels&rev=v3.5.0" },
+    { name = "typer", specifier = ">=0.12.3" },
     { name = "vllm", index = "https://wheels.vllm.ai/nightly" },
     { name = "xformers" },
 ]
@@ -3828,7 +3830,7 @@ wheels = [
 
 [[package]]
 name = "vllm"
-version = "0.11.1rc5.dev31+gfcb1d570b.cu129"
+version = "0.11.1rc5.dev33+gb5d90f740.cu129"
 source = { registry = "https://wheels.vllm.ai/nightly" }
 dependencies = [
     { name = "aiohttp" },
@@ -3894,8 +3896,8 @@ dependencies = [
     { name = "xgrammar", marker = "platform_machine == 'aarch64' or platform_machine == 'arm64' or platform_machine == 'x86_64'" },
 ]
 wheels = [
-    { url = "https://wheels.vllm.ai/nightly/vllm-0.11.1rc5.dev31%2Bgfcb1d570b.cu129-cp38-abi3-manylinux1_x86_64.whl" },
-    { url = "https://wheels.vllm.ai/nightly/vllm-0.11.1rc5.dev31%2Bgfcb1d570b.cu129-cp38-abi3-manylinux2014_aarch64.whl" },
+    { url = "https://wheels.vllm.ai/nightly/vllm-0.11.1rc5.dev33%2Bgb5d90f740.cu129-cp38-abi3-manylinux1_x86_64.whl" },
+    { url = "https://wheels.vllm.ai/nightly/vllm-0.11.1rc5.dev33%2Bgb5d90f740.cu129-cp38-abi3-manylinux2014_aarch64.whl" },
 ]
 
 [[package]]

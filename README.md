@@ -96,7 +96,6 @@ Grounding outputs embed `<|ref|>`/`<|det|>` tokens identifying detected spans; `
 main.py             # Pipeline entrypoint
 ocr_settings.py     # Pydantic settings loader (TOML + env)
 ocr_settings.toml   # Documented defaults for all runtime knobs
-DeepSeek-OCR/       # Vendored upstream DeepSeek code (read-only)
 vllm/               # Vendored vLLM snapshot (read-only)
 outputs/            # Generated markdown and image artefacts
 ```

@@ -234,19 +234,9 @@ Kako zbroj brojeva u posljednje tri celije mora biti 25 to je b + c + 4 = 25 odn
 
 (a) Ground truth image 
 
- </ref> 
-
- </ref> 
-
- </ref> 
-
 Prvi dan trčanja Tomislav može izabrati na 7 različitih načina. 
 
- </ref> 
-
-Drugi dan trčanja može izabrati na 4 različita načina poštujući uvjet da ne trči dva dana za redom. 
-
- </ref> <ref>
+Drugi dan trčanja može izabrati na 4 različita načina poštujući uvjet da ne trči dva dana za redom.
 
 <!-- Page 9 -->
 <!-- Page image stored at images/page-009.png -->

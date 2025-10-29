@@ -1,19 +1,54 @@
 # Default configuration for the DeepSeek OCR pipeline.
-# Adjust values here or via `DEEPSEEK_` environment variables.
+# Each key can be overridden via `DEEPSEEK_*` environment variables or entries in `.env`.
 
+# -----------------------------------------------------------------------------
+# Model checkpoint to load. Accepts Hugging Face model IDs or local paths.
+# Example: "deepseek-ai/DeepSeek-OCR", "./weights/DeepSeek-OCR".
 model = "deepseek-ai/DeepSeek-OCR"
+
+# Prompt sent to the model. The pipeline supports DeepSeek grounding tags such as:
+#   <image>         – placeholder for the document image
+#   <|grounding|>   – request grounded output (markdown layout)
+#   <|ref|>text<|/ref|> paired with <|det|>[coords]<|/det|> to reference spans
+#   <|ref|>image<|/ref|> for figure extraction
+# Sample prompts:
+#   - "<image>\n<|grounding|>Convert the document to markdown." (default)
+#   - "<image>\nFree OCR." (plain text extraction)
+#   - "<image>\nParse the figure." (detailed figure description)
+#   - "<image>\nLocate <|ref|>Invoice Number<|/ref|> in the image." (search)
 prompt = "<image>\n<|grounding|>Convert the document to markdown."
+
+# Path to the PDF you want to parse. Relative paths resolve from the project root.
 pdf_path = "DeepSeek_OCR_paper.pdf"
+
+# Where to store the generated markdown and derived assets.
 output_docs_dir = "outputs/docs"
-# Uncomment to override the derived images directory.
+
+# Optional explicit directory for cropped images. Defaults to `output_docs_dir/images`.
 # output_images_dir = "outputs/docs/images"
+
+# Name of the markdown output file. Relative paths live inside `output_docs_dir`.
 output_markdown = "DeepSeek-OCR_paper.md"
+
+# Resolution (dots per inch) when rasterising PDF pages.
 pdf_dpi = 144
+
+# Enable tiled crops (true) or only a global view per page (false).
 crop_mode = false
+
+# Maximum pages processed concurrently by vLLM. Lower this if GPU memory is tight.
 max_concurrency = 1
+
+# Vision encoder resolutions. Must align with the model configuration.
+# Common presets: base_size=1024,image_size=640 for "Gundam" mode; matching square sizes for others.
 image_size = 640
 base_size = 1024
+
+# Crop tiling bounds. Increase only if crop_mode=true and your GPU has headroom.
 min_crops = 1
 max_crops = 6
+
+# Repeat-control parameters passed to the logits processor.
+# Blocks any sequence of length `ngram_size` if it reappears within `window_size` tokens.
 ngram_size = 6
 window_size = 60

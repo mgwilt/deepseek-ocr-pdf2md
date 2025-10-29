@@ -1,0 +1,6 @@
+[submodule "vllm"]
+	path = vllm
+	url = https://github.com/vllm-project/vllm.git
+[submodule "DeepSeek-OCR"]
+	path = DeepSeek-OCR
+	url = https://github.com/mgwilt/DeepSeek-OCR.git
